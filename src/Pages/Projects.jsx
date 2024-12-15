@@ -3,7 +3,6 @@ import Header from '../Components/Header'
 import ProjectCard from '../Components/ProjectCard'
 import { Col, Row } from 'react-bootstrap'
 
-
 const Projects = () => {
   return (
     <>

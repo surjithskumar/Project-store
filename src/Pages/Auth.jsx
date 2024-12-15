@@ -1,10 +1,61 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Form } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { registerAPI } from '../services/allAPI';
 
 function Auth({ register }) {
 
     const isRegisterForm = register ? true : false
+    const navigate = useNavigate()
+    const[userData,setUserData]=useState({
+        username:"",email:"",password:""
+    })
+
+    const handleRegister= async(e)=>{
+        e.preventDefault();
+
+        const{username,email,password}=userData
+        if(!username || !email || !password){
+            toast.info("Please fill missing fields")
+        }else{
+            // api call
+            const result = await registerAPI(userData)
+            console.log(result);
+            if(result.status==200){
+                toast.success(`${result.data.username} has successfully registered`)
+                navigate('/login')
+                setUserData({username:"",email:"",password:""})
+            }else{
+                toast.warning(result.response.data)
+            }
+        }
+    }
+
+    const handleLogin=async(e)=>{
+        e.preventDefault()
+        const{email,password}=userData
+        if(!email || !password){
+            toast.info("Please fill missing fields")
+        }else{
+
+            try {
+                // proceed to api call
+                const result = await loginAPI({email,password})
+                if(result.status==200){
+                    sessionStorage.setItem("username",result.data.existingUser.username)
+                    sessionStorage.setItem("token",result.data.token)
+                    navigate('/')
+                    setUserData({username:"",email:"",password:""})
+                }else{
+                    toast.warning(result.response.data)
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        }
+    }
 
     return (
         <>
@@ -29,21 +80,21 @@ function Auth({ register }) {
                                         {
                                             isRegisterForm &&
                                             <Form.Group className="mb-3" controlId="ControlInputName">
-                                                <Form.Control type="text" placeholder="Enter your name" />
+                                                <Form.Control type="text" placeholder="Enter your name" onChange={e=>setUserData({...userData,username:e.target.value})} value={userData.username} />
                                             </Form.Group>
                                         }
                                         <Form.Group className="mb-3" controlId="ControlInputEmail">
-                                                <Form.Control type="email" placeholder="Enter your email" />
+                                                <Form.Control type="email" placeholder="Enter your email" onChange={e=>setUserData({...userData,email:e.target.value})} value={userData.email} />
                                             </Form.Group>
                                         <Form.Group className="mb-3" controlId="ControlInputpswd">
-                                                <Form.Control type="email" placeholder="Enter your Password" />
+                                                <Form.Control type="email" placeholder="Enter your Password" onChange={e=>setUserData({...userData,password:e.target.value})} value={userData.password} />
                                             </Form.Group>
                                             {
                                                 isRegisterForm ? <div>
-                                                    <button className='btn btn-warning text-light'>Register</button>
+                                                    <button className='btn btn-warning text-light' onClick={handleRegister}>Register</button>
                                                     <p>Already have an account ? Click here to <Link to={'/login'} style={{textDecoration:'none',color:'black'}}>Login</Link></p>
                                                 </div> : <div>
-                                                    <button className='btn btn-success'>Login</button>
+                                                    <button className='btn btn-success' onClick={handleLogin}>Login</button>
                                                     <p>New User ? Click here to <Link to={'/register'} style={{textDecoration:'none',color:'black'}}>Register</Link></p>
                                                 </div>
                                             }
@@ -54,6 +105,8 @@ function Auth({ register }) {
                     </div>
                 </div>
             </div>
+
+            <ToastContainer />
 
         </>
     )

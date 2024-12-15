@@ -1,10 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col, Row, Container } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import titleImage from '../assets/images/img1-home.gif';
 import ProjectCard from '../Components/ProjectCard';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Home = () => {
+
+  const [isLoggedIn,setIsLoggedIn]=useState(false);
+  const navigate = useNavigate()
+
+  useEffect(()=>{
+    if(sessionStorage.getItem("token")){
+      navigate('/projects')
+    }else{
+      toast.warning("please login to explore more prjects ...")
+    }
+  })
+
+  const handleProjectsPage=()=>{
+    if(sessionStorage.getItem("token")){
+      setIsLoggedIn(true)
+    }else{
+      setIsLoggedIn(false)
+    }
+  }
+
   return (
     <>
       {/* Hero Section */}
@@ -16,15 +38,12 @@ const Home = () => {
                 <i className="fa-solid fa-list-check me-2"></i>Project-Fair
               </h1>
               <p className="text-light">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Quibusdam, ipsa repellendus, necessitatibus voluptatibus
-                veritatis itaque reprehenderit beatae vitae similique dicta
-                minus ullam, assumenda illum. Dolorem tenetur quas maiores ipsam
-                saepe.
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam, ipsa repellendus, necessitatibus voluptatibus veritatis itaque reprehenderit beatae vitae similique dicta minus ullam, assumenda illum. Dolorem tenetur quas maiores ipsam saepe.
               </p>
-              <Link to={'/login'} className="btn btn-dark mt-3">
-                Start to Explore
-              </Link>
+              { isLoggedIn ? 
+                <Link to={'/dashboard'} className="btn btn-dark mt-3"> Manage Your Projects </Link> :
+                <Link to={'/login'} className="btn btn-dark mt-3"> Start to Explore </Link>
+              }
             </Col>
             <Col xs={12} md={6} className="text-center">
               <img
@@ -58,6 +77,12 @@ const Home = () => {
           </marquee>
         </div>
       </div>
+
+      <div className="text-center">
+        <p className='btn' onClick={handleProjectsPage}>View More Projects</p>
+      </div>
+      <ToastContainer />
+
     </>
   );
 };
