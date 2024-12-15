@@ -13,17 +13,17 @@ const Home = () => {
 
   useEffect(()=>{
     if(sessionStorage.getItem("token")){
-      navigate('/projects')
-    }else{
-      toast.warning("please login to explore more prjects ...")
-    }
-  })
-
-  const handleProjectsPage=()=>{
-    if(sessionStorage.getItem("token")){
       setIsLoggedIn(true)
     }else{
       setIsLoggedIn(false)
+    }
+  },[navigate]);
+
+  const handleProjectsPage=()=>{
+    if(sessionStorage.getItem("token")){
+      navigate('/projects')
+    }else{
+      toast.warning("Please login to explore more projects...");
     }
   }
 

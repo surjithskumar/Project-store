@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { registerAPI } from '../services/allAPI';
+import { loginAPI } from '../services/allAPI';
 
 function Auth({ register }) {
 
@@ -25,10 +26,10 @@ function Auth({ register }) {
             console.log(result);
             if(result.status==200){
                 toast.success(`${result.data.username} has successfully registered`)
-                navigate('/login')
                 setUserData({username:"",email:"",password:""})
+                navigate('/login')
             }else{
-                toast.warning(result.response.data)
+                toast.error(result.response?.data || "Registration failed");
             }
         }
     }
@@ -46,8 +47,8 @@ function Auth({ register }) {
                 if(result.status==200){
                     sessionStorage.setItem("username",result.data.existingUser.username)
                     sessionStorage.setItem("token",result.data.token)
-                    navigate('/')
                     setUserData({username:"",email:"",password:""})
+                    navigate('/')
                 }else{
                     toast.warning(result.response.data)
                 }
@@ -60,7 +61,7 @@ function Auth({ register }) {
     return (
         <>
 
-            <div className="d-flex justify-content-center align-otems-center">
+            <div className="d-flex justify-content-center align-items-center">
                 <div className="w-75 container">
                     <Link to={'/'} style={{ textDecoration: 'none', color: 'blue', fontWeight: 'bolder' }}><i class='fa-solid fa-arrow-left me-2' ></i>Back to Home</Link>
                     <div className="card shadow p-5 bg-primary">
@@ -87,7 +88,7 @@ function Auth({ register }) {
                                                 <Form.Control type="email" placeholder="Enter your email" onChange={e=>setUserData({...userData,email:e.target.value})} value={userData.email} />
                                             </Form.Group>
                                         <Form.Group className="mb-3" controlId="ControlInputpswd">
-                                                <Form.Control type="email" placeholder="Enter your Password" onChange={e=>setUserData({...userData,password:e.target.value})} value={userData.password} />
+                                                <Form.Control type="password" placeholder="Enter your Password" onChange={e=>setUserData({...userData,password:e.target.value})} value={userData.password} />
                                             </Form.Group>
                                             {
                                                 isRegisterForm ? <div>
