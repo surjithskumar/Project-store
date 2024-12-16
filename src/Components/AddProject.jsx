@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Button, FloatingLabel, Form, Modal } from 'react-bootstrap'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddProject = () => {
 
@@ -21,7 +23,7 @@ const AddProject = () => {
     const[fileStatus,setFileStatus]=useState(false)
 
     useEffect(()=>{
-      if(projectData.projectImage.type=='image/png' || projectData.projectImage.type=='image/jpg'){
+      if(projectData.projectImage.type ==='image/png' || projectData.projectImage.type ==='image/jpg' || projectData.projectImage.type === 'image/jpeg'){
         console.log("generate url");
         setFileStatus(false)
         setPreview(URL.createObjectURL(projectData.projectImage));
@@ -32,11 +34,25 @@ const AddProject = () => {
       }
     },[projectData.projectImage])
 
+    const handleAddProject=async()=>{
+      const {title,languages,overview,github,website,projectImage} = projectData
+      if(!title||!languages||!overview||!github||!website||!projectImage){
+        toast.info('Please fill missing fields')
+      }else{
+        // reqBody = formData
+        const reqBody = new FormData()
+        reqBody.append("title",title)
+        reqBody.append("languages",languages)
+        reqBody.append("overview",overview)
+        reqBody.append("github",github)
+        reqBody.append("website",website)
+        reqBody.append("projectImage",projectImage)
+      }
+    }
+
   return (
     <>
-      <Button variant="primary" onClick={handleShow} className='me-2 rounded'>
-        Add-Project
-      </Button>
+      <Button variant="primary" onClick={handleShow} className='me-2 rounded'>Add-Project</Button>
 
       <Modal
         show={show}
@@ -76,12 +92,12 @@ const AddProject = () => {
                 </div>
                 <div className="mb-2">
                 <FloatingLabel controlId="floatinggit" label="Github-Link">
-                  <Form.Control type="text" placeholder="Github" />
+                  <Form.Control type="text" placeholder="Github" onChange={e => setProjectData({ ...projectData, github: e.target.value })} />
                 </FloatingLabel>
                 </div>
                 <div className="mb-2">
                 <FloatingLabel controlId="floatingweb" label="website-Link">
-                  <Form.Control type="text" placeholder="website link" />
+                  <Form.Control type="text" placeholder="website link" onChange={e => setProjectData({ ...projectData, website: e.target.value })} />
                 </FloatingLabel>
                 </div>
               </Form>
@@ -92,9 +108,11 @@ const AddProject = () => {
           <Button variant="secondary" onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant="primary">Upload</Button>
+          <Button variant="primary" onClick={handleAddProject}>Upload</Button>
         </Modal.Footer>
       </Modal>
+
+      <ToastContainer />
     </>
   )
 }
