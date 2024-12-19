@@ -5,13 +5,16 @@ import titleImage from '../assets/images/img1-home.gif';
 import ProjectCard from '../Components/ProjectCard';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { getHomeProjectAPI } from '../services/allAPI';
 
 const Home = () => {
 
   const [isLoggedIn,setIsLoggedIn]=useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [allProjects,setAllProjects]=useState([]);
 
   useEffect(()=>{
+    getHomeProjects();
     if(sessionStorage.getItem("token")){
       setIsLoggedIn(true)
     }else{
@@ -26,6 +29,18 @@ const Home = () => {
       toast.warning("Please login to explore more projects...");
     }
   }
+
+  const getHomeProjects=async()=>{
+    // api call
+    const result = await getHomeProjectAPI();
+    console.log(result);
+    if(result.status == 200){
+      setAllProjects(result.data);
+    }else{
+      console.log(result);
+    }
+  }
+  console.log(allProjects);
 
   return (
     <>
@@ -64,15 +79,13 @@ const Home = () => {
         <div className="container overflow-auto py-4">
           <marquee scrollAmount={15}>
             <Row className="g-4">
-              <Col xs={12} sm={6} lg={4}>
-                <ProjectCard />
-              </Col>
-              <Col xs={12} sm={6} lg={4}>
-                <ProjectCard />
-              </Col>
-              <Col xs={12} sm={6} lg={4}>
-                <ProjectCard />
-              </Col>
+              {
+                allProjects.length>0?allProjects.map(project=>(
+                  <Col sm={12} md={6} lg={4}>
+                    <ProjectCard project={project}/>
+                  </Col>
+                )) : null
+              }
             </Row>
           </marquee>
         </div>

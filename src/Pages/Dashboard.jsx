@@ -1,10 +1,21 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '../Components/Header'
 import { Col, Row } from 'react-bootstrap'
 import MyProjects from '../Components/MyProjects'
 import Profile from '../Components/Profile'
 
 const Dashboard = () => {
+
+  const [username,setUsername] = useState("");
+  useEffect(()=>{
+    if(sessionStorage.getItem('username')){
+      setUsername(sessionStorage.getItem('username'));
+    }else{
+      setUsername('');
+    }
+  },[])
+
+
   return (
     <>
       <Header />
@@ -12,7 +23,7 @@ const Dashboard = () => {
         <Row>
           {/* My projects */}
           <Col sm={12} md={8}>
-            <h1>Welcome <span className='text-warning fw-bolder'>User</span></h1>
+            <h1>Welcome <span className='text-warning fw-bolder'>{username}</span></h1>
             <MyProjects />
           </Col>
 
